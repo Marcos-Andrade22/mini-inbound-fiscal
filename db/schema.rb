@@ -10,9 +10,52 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_09_143746) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_09_150654) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "empresas", force: :cascade do |t|
+    t.decimal "aliquota_imposto"
+    t.string "cnpj"
+    t.datetime "created_at", null: false
+    t.string "nome"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "fornecedores", force: :cascade do |t|
+    t.string "cnpj"
+    t.datetime "created_at", null: false
+    t.bigint "empresa_id", null: false
+    t.string "nome"
+    t.datetime "updated_at", null: false
+    t.index ["empresa_id"], name: "index_fornecedores_on_empresa_id"
+  end
+
+  create_table "notas_fiscais", force: :cascade do |t|
+    t.string "chave"
+    t.datetime "created_at", null: false
+    t.bigint "fornecedor_id", null: false
+    t.decimal "impostos"
+    t.string "numero"
+    t.bigint "pedido_compra_id", null: false
+    t.integer "score_conformidade"
+    t.string "status"
+    t.datetime "updated_at", null: false
+    t.decimal "valor_total"
+    t.index ["fornecedor_id"], name: "index_notas_fiscais_on_fornecedor_id"
+    t.index ["pedido_compra_id"], name: "index_notas_fiscais_on_pedido_compra_id"
+  end
+
+  create_table "pedido_compras", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "empresa_id", null: false
+    t.bigint "fornecedor_id", null: false
+    t.string "numero"
+    t.datetime "updated_at", null: false
+    t.decimal "valor_previsto"
+    t.index ["empresa_id"], name: "index_pedido_compras_on_empresa_id"
+    t.index ["fornecedor_id"], name: "index_pedido_compras_on_fornecedor_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.boolean "allow_password_change", default: false
@@ -38,4 +81,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_09_143746) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
+
+  add_foreign_key "fornecedores", "empresas"
+  add_foreign_key "notas_fiscais", "fornecedores", column: "fornecedor_id"
+  add_foreign_key "notas_fiscais", "pedido_compras"
+  add_foreign_key "pedido_compras", "empresas"
+  add_foreign_key "pedido_compras", "fornecedores", column: "fornecedor_id"
 end
