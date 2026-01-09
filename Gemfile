@@ -21,7 +21,9 @@ gem "solid_queue"
 gem "solid_cable"
 
 gem "devise_token_auth", github: "lynndylanhurley/devise_token_auth"  # Versão master com Rails 8 support
-gem "devise"  # Dependência
+gem "devise"
+gem "rack-cors"
+
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
